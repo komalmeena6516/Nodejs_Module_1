@@ -2,13 +2,19 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const Todo = require("./TodoSchema");
+const { LoggerMiddleware, SampleMiddleware } = require("./LoggerMiddleware");
 require("dotenv").config();
 const PORT = 8001;
 
 app.use(express.json());
+
+// Logger middleware-
+app.use(LoggerMiddleware);
+app.use(SampleMiddleware);
+
 // --------------------all qeries of mongoose---------------------------
 
-// GET - fetch all data
+// GET - fetch all data todos
 
 app.get("/todos", async (req, res) => {
   try {
@@ -18,7 +24,6 @@ app.get("/todos", async (req, res) => {
     res.status(500).send("Internal sever error");
   }
 });
-
 
 // get - fetct one singel todo based on i
 app.get("/todo/:id", async (req, res) => {
@@ -30,7 +35,6 @@ app.get("/todo/:id", async (req, res) => {
     res.status(500).send("Internal sever error");
   }
 });
-
 
 // delete - delte one sigle todo using id
 app.delete("/todo/:id", async (req, res) => {
@@ -51,7 +55,6 @@ app.put("/todo", async (req, res) => {
       isCompleted: updatedTodoData.isCompleted,
     });
     res.status(200).send("Todo is succesfully updated");
-    
   } catch (e) {
     res.status(500).send("Internal sever error");
   }
@@ -73,9 +76,7 @@ app.post("/todo", (req, res) => {
 });
 
 mongoose
-  .connect(
-    process.env.MONGODB_URL
-  )
+  .connect(process.env.MONGODB_URL)
   .then(() => console.log("mongoDB is connected"))
   .catch((err) => console.log(err));
 
